@@ -35,7 +35,7 @@
 	<scm>
 		<connection>scm:git:https://github.com/tony-bringardner/fx-widgets.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/tony-bringardner/fx-widgets.git</developerConnection>
-		<url>https://github.com/tony-bringardner/fx-widgets/tree/main</url>
+		<url>https://github.com/tony-bringardner/fx-widgets/tree/master</url>
 		<tag>HEAD</tag>
 	</scm>
 
