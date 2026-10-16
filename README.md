@@ -1,7 +1,7 @@
 # fx-widgets
 
 Reusable JavaFX components, the JavaFX counterpart of
-[swing-widgets](https://github.com/tony-bringardner/swing-widgets). Only what JavaFX lacks is here;
+[swing-widgets](https://github.com/parley-project/swing-widgets). Only what JavaFX lacks is here;
 where JavaFX already has something (CSS styling, `Alert`, prompt text, `Task` progress) there is no
 twin of the Swing widget.
 
@@ -12,7 +12,7 @@ twin of the Swing widget.
 ## Why this library exists
 
 JavaFX is missing a few things a desktop application needs, such as a "recent files" menu, and
-[swing-widgets](https://github.com/tony-bringardner/swing-widgets) only helps Swing applications.
+[swing-widgets](https://github.com/parley-project/swing-widgets) only helps Swing applications.
 fx-widgets fills those gaps for JavaFX, and only those: it doesn't copy Swing widgets that JavaFX
 already covers.
 
