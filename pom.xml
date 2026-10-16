@@ -7,13 +7,13 @@
 	     Maven Central release profile below are copied from parley-parent. -->
 	<groupId>us.bringardner</groupId>
 	<artifactId>bringardner-fx-widgets</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>FX Widgets</name>
 	<description>Reusable JavaFX components: a "recent items" menu that shares its list with
 		swing-widgets' Swing menu.</description>
-	<url>https://github.com/tony-bringardner/fx-widgets</url>
+	<url>https://github.com/parley-project/fx-widgets</url>
 	<inceptionYear>1998</inceptionYear>
 
 	<licenses>
@@ -33,15 +33,15 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:https://github.com/tony-bringardner/fx-widgets.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/tony-bringardner/fx-widgets.git</developerConnection>
-		<url>https://github.com/tony-bringardner/fx-widgets/tree/master</url>
+		<connection>scm:git:https://github.com/parley-project/fx-widgets.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/parley-project/fx-widgets.git</developerConnection>
+		<url>https://github.com/parley-project/fx-widgets/tree/master</url>
 		<tag>HEAD</tag>
 	</scm>
 
 	<issueManagement>
 		<system>GitHub Issues</system>
-		<url>https://github.com/tony-bringardner/fx-widgets/issues</url>
+		<url>https://github.com/parley-project/fx-widgets/issues</url>
 	</issueManagement>
 
 	<properties>
@@ -195,12 +195,12 @@
 		</pluginManagement>
 	</build>
 
-	<!-- GitHub Packages, used by release.sh. Maven Central releases use: mvn -Prelease clean deploy -->
+	<!-- GitHub Packages: mvn clean deploy. Maven Central releases use the release profile: mvn -Prelease clean deploy -->
 	<distributionManagement>
 		<repository>
 			<id>github</id>
-			<name>tony-bringardner</name>
-			<url>https://maven.pkg.github.com/tony-bringardner/fx-widgets</url>
+			<name>parley-project</name>
+			<url>https://maven.pkg.github.com/parley-project/fx-widgets</url>
 		</repository>
 	</distributionManagement>
 
@@ -209,7 +209,7 @@
 		<dependency>
 			<groupId>us.bringardner</groupId>
 			<artifactId>bringardner-swing-widgets</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 		<!-- javafx-graphics and javafx-base come with it, for this platform -->
 		<dependency>
