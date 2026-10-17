@@ -1,0 +1,201 @@
+/*
+ * The gradient look for JavaFX: what swing-widgets' GradientLook gives a Swing application, and
+ * what parley-files-viewer looks like. A diagonal gradient from the light color (top left) to the
+ * dark color (bottom right) behind everything; trees, tables and lists you see it through; the
+ * dark color for grid lines, table headers and selections; rounded gradient buttons.
+ *
+ * The two colors are looked-up colors: GradientLook.apply sets them from swing-widgets'
+ * GradientColors, so a change there reaches Swing and JavaFX alike. These are the defaults.
+ */
+
+.root {
+	-gradient-start: #F2CE71;
+	-gradient-end: #967B28;
+
+	-fx-background-color: linear-gradient(to bottom right, -gradient-start, -gradient-end);
+
+	/* Modena's colors, derived from the gradient's */
+	-fx-base: -gradient-start;
+	-fx-accent: -gradient-end;
+	-fx-focus-color: -gradient-end;
+	-fx-faint-focus-color: transparent;
+	-fx-selection-bar: -gradient-end;
+	-fx-selection-bar-non-focused: derive(-gradient-end, 25%);
+	-fx-selection-bar-text: -gradient-start;
+	-fx-box-border: -gradient-end;
+	-fx-outer-border: derive(-gradient-end, 20%);
+	-fx-default-button: -gradient-end;
+	/* text fields and other inputs stay white, as in Swing */
+	-fx-control-inner-background: white;
+	-fx-control-inner-background-alt: white;
+}
+
+/* ---- menus: the bar is see-through, the menus are the light color ---- */
+.menu-bar {
+	-fx-background-color: transparent;
+}
+.menu-bar > .container > .menu-button:hover,
+.menu-bar > .container > .menu-button:showing {
+	-fx-background-color: derive(-gradient-end, 20%);
+}
+.context-menu {
+	-fx-background-color: -gradient-start;
+	-fx-border-color: -gradient-end;
+}
+.menu-item:focused {
+	-fx-background-color: -gradient-end;
+}
+.menu-item:focused > .label {
+	-fx-text-fill: -gradient-start;
+}
+
+/* ---- buttons: swing-widgets' GradientButton, rounded, white text, dark edge ---- */
+.button, .toggle-button {
+	-fx-background-color: -gradient-end, linear-gradient(to right, derive(-gradient-end, 10%), derive(-gradient-start, -10%));
+	-fx-background-insets: 0, 1.5;
+	-fx-background-radius: 6, 5;
+	-fx-text-fill: white;
+	-fx-padding: 4 14 4 14;
+}
+.button:hover, .toggle-button:hover {
+	-fx-background-color: -gradient-end, linear-gradient(to right, derive(-gradient-end, 25%), -gradient-start);
+}
+.button:pressed, .toggle-button:selected {
+	-fx-background-color: -gradient-start, linear-gradient(to right, -gradient-end, derive(-gradient-end, 20%));
+}
+.button:default {
+	-fx-font-weight: bold;
+}
+.button:disabled {
+	-fx-opacity: 0.5;
+}
+
+/* ---- see-through trees, tables and lists ---- */
+.tree-view, .list-view, .table-view, .tree-table-view,
+.tree-view > .virtual-flow > .clipped-container > .sheet,
+.list-view > .virtual-flow > .clipped-container > .sheet,
+.table-view > .virtual-flow > .clipped-container > .sheet {
+	-fx-background-color: transparent;
+}
+.tree-view, .list-view, .table-view, .tree-table-view {
+	-fx-border-color: derive(-gradient-end, 20%);
+}
+.tree-cell, .list-cell, .table-row-cell, .tree-table-row-cell {
+	-fx-background-color: transparent;
+	-fx-text-fill: black;
+}
+.tree-cell:filled:selected, .list-cell:filled:selected,
+.table-row-cell:filled:selected, .tree-table-row-cell:filled:selected {
+	-fx-background-color: -gradient-end;
+	-fx-text-fill: -gradient-start;
+}
+.table-row-cell:filled:selected > .table-cell {
+	-fx-text-fill: -gradient-start;
+}
+.tree-cell > .tree-disclosure-node > .arrow,
+.tree-table-row-cell > .tree-disclosure-node > .arrow {
+	-fx-background-color: -gradient-end;
+}
+.tree-cell:selected > .tree-disclosure-node > .arrow {
+	-fx-background-color: -gradient-start;
+}
+
+/* tables: grid lines and the header in the dark color */
+.table-row-cell {
+	-fx-table-cell-border-color: -gradient-end;
+	-fx-border-color: transparent transparent -gradient-end transparent;
+	-fx-border-width: 0 0 1 0;
+}
+.table-cell {
+	-fx-text-fill: black;
+	-fx-border-color: transparent -gradient-end transparent transparent;
+	-fx-border-width: 0 1 0 0;
+}
+.table-view .column-header-background,
+.table-view .column-header,
+.table-view .filler,
+.tree-table-view .column-header-background,
+.tree-table-view .column-header,
+.tree-table-view .filler {
+	-fx-background-color: -gradient-end;
+}
+.table-view .column-header .label,
+.tree-table-view .column-header .label {
+	-fx-text-fill: -gradient-start;
+	-fx-font-weight: bold;
+}
+.table-view .column-header .arrow,
+.tree-table-view .column-header .arrow {
+	-fx-background-color: -gradient-start;
+}
+
+/* ---- scroll bars: the light color for the track, a gradient thumb ---- */
+.scroll-bar {
+	-fx-background-color: -gradient-start;
+}
+.scroll-bar > .thumb {
+	-fx-background-color: linear-gradient(to right, -gradient-end, derive(-gradient-end, 30%));
+	-fx-background-radius: 4;
+}
+.scroll-bar > .increment-button,
+.scroll-bar > .decrement-button {
+	-fx-background-color: -gradient-start;
+}
+.scroll-bar > .increment-button > .increment-arrow,
+.scroll-bar > .decrement-button > .decrement-arrow {
+	-fx-background-color: -gradient-end;
+}
+.scroll-pane, .scroll-pane > .viewport, .split-pane {
+	-fx-background-color: transparent;
+}
+.split-pane > .split-pane-divider {
+	-fx-background-color: derive(-gradient-end, 20%);
+	-fx-padding: 0 1 0 1;
+}
+
+/* ---- tabs and titled panes ---- */
+.tab-pane > .tab-header-area > .tab-header-background {
+	-fx-background-color: transparent;
+}
+.tab-pane > .tab-header-area > .headers-region > .tab:selected {
+	-fx-background-color: -gradient-end;
+}
+.tab-pane > .tab-header-area > .headers-region > .tab:selected .tab-label {
+	-fx-text-fill: -gradient-start;
+}
+.titled-pane > .title {
+	-fx-background-color: -gradient-end;
+}
+.titled-pane > .title > .text {
+	-fx-fill: -gradient-start;
+}
+.titled-pane > .content {
+	-fx-background-color: transparent;
+}
+
+/* ---- dialogs: the gradient too ---- */
+.dialog-pane {
+	-fx-background-color: linear-gradient(to bottom right, -gradient-start, -gradient-end);
+}
+.dialog-pane > .header-panel {
+	-fx-background-color: transparent;
+}
+.dialog-pane > .button-bar > .container {
+	-fx-background-color: transparent;
+}
+
+.tooltip {
+	-fx-background-color: -gradient-start;
+	-fx-text-fill: black;
+	-fx-border-color: -gradient-end;
+}
+
+.progress-bar > .bar {
+	-fx-background-color: linear-gradient(to right, -gradient-end, -gradient-start);
+}
+
+/* no grid lines below the last row, as in Swing */
+.table-row-cell:empty,
+.table-row-cell:empty > .table-cell {
+	-fx-border-color: transparent;
+}

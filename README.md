@@ -45,6 +45,7 @@ anyway.
 | Package | Class | Purpose |
 |---|---|---|
 | `us.bringardner.fx.menu` | `RecentItemsMenu` | A "Recent ..." menu of any kind of item, saved with `java.util.prefs.Preferences`. |
+| `us.bringardner.fx.gradient` | `GradientLook` | parley-files-viewer's gradient look as a stylesheet: the twin of swing-widgets' `GradientLook`, with the same colors. |
 
 ### RecentItemsMenu
 
@@ -67,11 +68,25 @@ Differences from the Swing menu:
 - The maximum is asked for by `askMaxItems`, and errors shown by `showError`; tests override them
   instead of showing dialogs.
 
+## The gradient look
+
+The look of parley-files-viewer (a diagonal gradient from light to dark gold behind everything, trees
+and tables you see it through, rounded gradient buttons) for a JavaFX application:
+
+```java
+Scene scene = GradientLook.apply(new Scene(root, 900, 600));
+Alert alert = GradientLook.apply(new Alert(AlertType.CONFIRMATION, "Quit?"));  // dialogs are their own windows
+```
+
+The colors are swing-widgets' `GradientColors`, so an application with both Swing and JavaFX windows
+changes them in one place. Popups (a `Popup`'s scene) take `GradientLook.apply(popup.getScene())`.
+
 ## Swing alternatives
 
 | fx-widgets | In Swing |
 |---|---|
 | `RecentItemsMenu` | swing-widgets' `RecentItemsMenu`, which shares its list with this one |
+| `GradientLook` | swing-widgets' `GradientLook`; both take their colors from swing-widgets' `GradientColors` |
 
 swing-widgets has more, because Swing lacks more: date and time pickers, a thread-safe progress
 monitor updater, a password field with a show/hide toggle, and gradient styling. Its README's

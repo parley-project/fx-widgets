@@ -1,5 +1,13 @@
 # Changelog
 
+## fx-widgets 1.1.0 (unreleased)
+
+### Added
+
+- `us.bringardner.fx.gradient.GradientLook`: parley-files-viewer's gradient look for JavaFX, the
+  twin of swing-widgets' `GradientLook`. `apply(scene)` and `apply(dialog)` add its stylesheet
+  (`gradient-look.css`) and set its two colors from swing-widgets' `GradientColors`.
+
 ## fx-widgets 1.0.0 (2026-10-16)
 
 ### Changed
