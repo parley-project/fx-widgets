@@ -27,6 +27,7 @@ import java.net.URL;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Dialog;
+import javafx.stage.Window;
 import us.bringardner.swing.gradient.GradientColors;
 
 /**
@@ -94,6 +95,34 @@ public final class GradientLook {
 		}
 		colors(pane);
 		return dialog;
+	}
+
+	/**
+	 * True if a window shows the gradient look: its scene, or its scene's root (as a dialog's
+	 * pane), has the stylesheet.
+	 *
+	 * @param window the window, or null
+	 * @return true if it has the look
+	 */
+	public static boolean isApplied(Window window) {
+		if( window == null || window.getScene() == null ) {
+			return false;
+		}
+		String css = stylesheet();
+		Scene scene = window.getScene();
+		return scene.getStylesheets().contains(css)
+				|| (scene.getRoot() != null && scene.getRoot().getStylesheets().contains(css));
+	}
+
+	/**
+	 * For a library's dialogs: gives a dialog the gradient look if the window that owns it has it,
+	 * and leaves it alone otherwise. Call it after {@code initOwner}.
+	 *
+	 * @param dialog the dialog
+	 * @return the dialog
+	 */
+	public static <T extends Dialog<?>> T follow(T dialog) {
+		return isApplied(dialog.getOwner()) ? apply(dialog) : dialog;
 	}
 
 	/** The CSS that sets the two colors, for a node's style. */

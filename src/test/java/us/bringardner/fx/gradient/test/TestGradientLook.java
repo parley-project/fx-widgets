@@ -118,4 +118,38 @@ public class TestGradientLook {
 	private static Color color(java.awt.Color c) {
 		return Color.rgb(c.getRed(), c.getGreen(), c.getBlue());
 	}
+
+	@Test
+	public void aDialogFollowsItsOwner() throws Exception {
+		boolean[] r = Fx.call(()->{
+			javafx.stage.Stage plain = new javafx.stage.Stage();
+			plain.setScene(new Scene(new BorderPane(), 100, 100));
+			javafx.stage.Stage gold = new javafx.stage.Stage();
+			gold.setScene(GradientLook.apply(new Scene(new BorderPane(), 100, 100)));
+
+			Alert a = new Alert(Alert.AlertType.INFORMATION, "a");
+			a.initOwner(plain);
+			GradientLook.follow(a);
+			Alert b = new Alert(Alert.AlertType.INFORMATION, "b");
+			b.initOwner(gold);
+			GradientLook.follow(b);
+			// a dialog that follows a dialog: its pane, not its scene, has the sheet
+			Alert c = new Alert(Alert.AlertType.INFORMATION, "c");
+			c.initOwner(b.getDialogPane().getScene().getWindow());
+			GradientLook.follow(c);
+			Alert d = new Alert(Alert.AlertType.INFORMATION, "d");
+			GradientLook.follow(d);
+			return new boolean[] {
+					a.getDialogPane().getStylesheets().contains(GradientLook.stylesheet()),
+					b.getDialogPane().getStylesheets().contains(GradientLook.stylesheet()),
+					c.getDialogPane().getStylesheets().contains(GradientLook.stylesheet()),
+					d.getDialogPane().getStylesheets().contains(GradientLook.stylesheet()),
+					GradientLook.isApplied(null)};
+		});
+		assertTrue(!r[0], "an owner without the look: left alone");
+		assertTrue(r[1], "an owner with the look: the dialog gets it");
+		assertTrue(r[2], "a dialog owned by a dialog with the look gets it");
+		assertTrue(!r[3], "no owner: left alone");
+		assertTrue(!r[4]);
+	}
 }
