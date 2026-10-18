@@ -525,7 +525,11 @@ public class ThemeDesigner {
 			pickers[i].setValue(Colors.fx(colors[i]));
 		}
 		updating = false;
-		preview.show(getTheme(), null);
+		Theme t = getTheme();
+		preview.show(t, null);
+		for(FxThemePage p : pages) {
+			p.themeChanged(t);
+		}
 		for(int i = 0; i < CHECKS.length; i++) {
 			double ratio = Theme.contrast(colors[CHECKS[i][0]], colors[CHECKS[i][1]]);
 			boolean ok = ratio * 10 >= CHECKS[i][2];

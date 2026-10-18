@@ -4,6 +4,8 @@
 
 ### Added
 
+- `FxThemePage.themeChanged(Theme)`: the theme designer tells an application's page of the theme
+  as it changes, as swing-widgets' `ThemeExtension.Page` does. It does nothing by default.
 - Folders (parley-files-fx's file views) in the theme's colors, as swing-widgets' `FolderIcon`: the
   stylesheet colors `.folder-icon`.
 - On macOS, title bars go dark or light with the theme: when the first window gets the gradient

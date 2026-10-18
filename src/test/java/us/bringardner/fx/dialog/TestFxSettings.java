@@ -372,6 +372,13 @@ public class TestFxSettings {
 		final Label node = new Label();
 		Map<String, String> values = new HashMap<>();
 		Runnable listener;
+		/** The theme the page was last told of. */
+		Theme heard;
+
+		@Override
+		public void themeChanged(Theme theme) {
+			heard = theme;
+		}
 
 		@Override
 		public Node getNode() {
@@ -405,6 +412,10 @@ public class TestFxSettings {
 			assertEquals(1, pages.size());
 			TestPage p = (TestPage) pages.get(0);
 			assertEquals("black", p.node.getText(), "the defaults for a theme without its own");
+			assertEquals(Theme.DARK.getStart(), p.heard.getStart(), "told of the theme");
+			d.setColor(0, new java.awt.Color(0x123456));
+			assertEquals(new java.awt.Color(0x123456), p.heard.getStart(), "and of a color changed");
+			d.setColor(0, Theme.DARK.getStart());
 			assertNotNull(p.listener);
 			p.values.put("color", "red");
 			p.listener.run();

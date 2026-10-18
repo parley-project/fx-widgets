@@ -51,4 +51,13 @@ public interface FxThemePage {
 
 	/** Called whenever the user changes a setting. */
 	void setChangeListener(Runnable listener);
+
+	/**
+	 * Called whenever the theme being designed changes (one of its colors, say), so a page whose
+	 * settings follow the theme's colors can show them. Nothing by default.
+	 *
+	 * @param theme the theme as the designer has it now
+	 */
+	default void themeChanged(Theme theme) {
+	}
 }
