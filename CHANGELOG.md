@@ -4,6 +4,8 @@
 
 ### Added
 
+- Folders (parley-files-fx's file views) in the theme's colors, as swing-widgets' `FolderIcon`: the
+  stylesheet colors `.folder-icon`.
 - On macOS, title bars go dark or light with the theme: when the first window gets the gradient
   look, and when Settings changes to or from a dark theme (swing-widgets' `MacAppearance`; the
   application needs JNA on its class path).

@@ -259,3 +259,14 @@
 .table-row-cell:empty > .table-cell {
 	-fx-border-color: transparent;
 }
+
+/* ---- folders (parley-files-fx's FileIcons): the theme's light color with its accent around, like
+   a manila folder, as swing-widgets' FolderIcon; a dark theme's is the accent, darkened ---- */
+.folder-icon {
+	-fx-fill: -gradient-start;
+	-fx-stroke: -theme-accent;
+}
+.theme-dark .folder-icon {
+	-fx-fill: derive(-theme-accent, -35%);
+	-fx-stroke: derive(-theme-accent, 30%);
+}
