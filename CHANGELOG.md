@@ -4,6 +4,12 @@
 
 ### Added
 
+- `us.bringardner.fx.dialog`: the appearance settings for JavaFX applications, twins of
+  swing-widgets' dialogs. `SettingsDialog` (theme and font, with a preview; shared with Swing
+  applications), `ThemeDesigner` (new and edited themes, readability checks, applications' own
+  pages through `FxThemePages`), `ThemePreview` and `FontDialog`.
+- `GradientLook.setFont(font)` and `refresh()`: the font of everything with the look, and the theme
+  and font put on every open window after a change. `colorStyle(theme)` gives any theme's colors.
 - `us.bringardner.fx.menu.StandardMenus`: the JavaFX twin of swing-widgets' `StandardMenus`, the
   same menu layout for JavaFX applications.
 - `us.bringardner.fx.gradient.GradientLook`: parley-files-viewer's gradient look for JavaFX, the

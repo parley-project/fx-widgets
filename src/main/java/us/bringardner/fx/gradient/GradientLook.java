@@ -128,7 +128,17 @@ public final class GradientLook {
 
 	/** The CSS that sets the current theme's colors, for a node's style. */
 	public static String colorStyle() {
-		Theme t = Theme.current();
+		return colorStyle(Theme.current());
+	}
+
+	/**
+	 * The CSS that sets a theme's colors, for a node's style: a node with the {@code root} style class
+	 * and this style shows the theme, whatever theme is in effect (a preview, say).
+	 *
+	 * @param t the theme
+	 * @return the style
+	 */
+	public static String colorStyle(Theme t) {
 		return "-gradient-start: " + css(t.getStart()) + "; -gradient-end: " + css(t.getEnd())
 				+ "; -theme-text: " + css(t.getText()) + "; -theme-field: " + css(t.getField())
 				+ "; -theme-field-text: " + css(t.getFieldText()) + "; -theme-selection: " + css(t.getSelection())
@@ -140,11 +150,57 @@ public final class GradientLook {
 	/** The style class on the root of a scene or dialog while a dark theme is in effect. */
 	public static final String DARK_CLASS = "theme-dark";
 
+	private static volatile java.awt.Font font;
+
+	/**
+	 * Sets the font of everything with the look (swing-widgets' {@code Appearance} font), or null for
+	 * JavaFX's own. It is used from the next {@link #apply} or {@link #refresh()}.
+	 *
+	 * @param f the font, or null
+	 */
+	public static void setFont(java.awt.Font f) {
+		font = f;
+	}
+
+	/** The font set with {@link #setFont}, or null for JavaFX's own. */
+	public static java.awt.Font getFont() {
+		return font;
+	}
+
+	/**
+	 * The CSS for a font, for a node's style: its family, size (in pixels, as Swing's points are on
+	 * the screen), weight and posture; empty for null.
+	 *
+	 * @param f the font, or null
+	 * @return the style
+	 */
+	public static String fontStyle(java.awt.Font f) {
+		if( f == null ) {
+			return "";
+		}
+		return "-fx-font-family: \"" + f.getName().replace("\"", "") + "\"; -fx-font-size: " + f.getSize()
+				+ "px; -fx-font-weight: " + (f.isBold() ? "bold" : "normal") + "; -fx-font-style: "
+				+ (f.isItalic() ? "italic" : "normal") + ";";
+	}
+
+	/**
+	 * Puts the current theme and font on every open window that has the look, after a change
+	 * (a settings dialog's OK, say).
+	 */
+	public static void refresh() {
+		for(Window w : new java.util.ArrayList<>(Window.getWindows())) {
+			if( isApplied(w) ) {
+				colors(w.getScene().getRoot());
+			}
+		}
+	}
+
 	private static void colors(Parent root) {
 		String style = root.getStyle() == null ? "" : root.getStyle();
 		// replace what an earlier call set, keep the rest
-		style = style.replaceAll("-(gradient|theme)-[a-z-]+:\\s*#[0-9A-Fa-f]{6};\\s*", "").trim();
-		root.setStyle((colorStyle() + " " + style).trim());
+		style = style.replaceAll("-(gradient|theme)-[a-z-]+:\\s*#[0-9A-Fa-f]{6};\\s*", "")
+				.replaceAll("-fx-font-(family|size|weight|style):[^;]*;\\s*", "").trim();
+		root.setStyle((colorStyle() + " " + fontStyle(font) + " " + style).replaceAll("\\s+$", "").replaceAll("  +", " ").trim());
 		root.getStyleClass().remove(DARK_CLASS);
 		if( Theme.current().isDark() ) {
 			root.getStyleClass().add(DARK_CLASS);

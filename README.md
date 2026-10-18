@@ -46,6 +46,10 @@ anyway.
 |---|---|---|
 | `us.bringardner.fx.menu` | `RecentItemsMenu` | A "Recent ..." menu of any kind of item, saved with `java.util.prefs.Preferences`. |
 | | `StandardMenus` | The menu bar every Parley application uses: the twin of swing-widgets' `StandardMenus`. |
+| `us.bringardner.fx.dialog` | `SettingsDialog` | The appearance settings (theme and font, with a preview), the twin of swing-widgets' `SettingsDialog`; saved where swing-widgets' `Appearance` keeps them, so Swing and JavaFX applications share them. |
+| | `ThemeDesigner`, `ThemePreview` | Make a new theme or change one of the user's own, with readability checks; a preview of a theme. |
+| | `FontDialog` | Choose a font: family, style and size, with a sample. |
+| | `FxThemePage`, `FxThemePages` | An application's own page in the theme designer (the JavaFX side of swing-widgets' `ThemeExtension`). |
 | `us.bringardner.fx.gradient` | `GradientLook` | parley-files-viewer's gradient look as a stylesheet: the twin of swing-widgets' `GradientLook`, with the same colors. |
 
 ### RecentItemsMenu
@@ -87,6 +91,28 @@ On macOS the bar uses the system menu bar, and About, Settings… and Quit go in
 menu when the platform lets JavaFX set them there; otherwise they stay in the window's menus, as on
 other platforms (Settings… and Exit at the end of File, About in Help).
 
+## Settings
+
+`SettingsDialog` is the appearance settings for a JavaFX application, the twin of swing-widgets'
+`SettingsDialog`: a theme (the built-in ones and the user's own), New theme..., Edit theme... and
+Delete theme, the font, and a preview. They are kept where swing-widgets' `Appearance` keeps them,
+so a Swing and a JavaFX application given the same preferences node share them.
+
+```java
+// at start-up, before any window is shown
+SettingsDialog.load(prefs);
+
+// Settings... (StandardMenus' settings item)
+if( SettingsDialog.showDialog(stage, prefs) ) {
+    // the theme and font are already on every window with the gradient look;
+    // anything else of the application's that follows the theme goes here
+}
+```
+
+An application's own part of a theme (swing-widgets' `ThemeExtension`, such as fsh-ide's syntax
+colors) gets a tab in the JavaFX theme designer when it registers a page:
+`FxThemePages.register(extensionId, MyPage::new)`.
+
 ## The gradient look
 
 The look of parley-files-viewer (a diagonal gradient from light to dark gold behind everything, trees
@@ -108,6 +134,7 @@ root has the `theme-dark` style class, for an application's own styles. Popups (
 |---|---|
 | `RecentItemsMenu` | swing-widgets' `RecentItemsMenu`, which shares its list with this one |
 | `StandardMenus` | swing-widgets' `StandardMenus`: the same layout for a Swing `JMenuBar` |
+| `SettingsDialog`, `ThemeDesigner`, `FontDialog` | swing-widgets' dialogs of the same names |
 | `GradientLook` | swing-widgets' `GradientLook`; both take their colors from swing-widgets' `GradientColors` |
 
 swing-widgets has more, because Swing lacks more: date and time pickers, a thread-safe progress
