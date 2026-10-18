@@ -160,4 +160,21 @@ public class TestStandardMenus {
 			return null;
 		});
 	}
+
+	@Test
+	public void theApplicationMenuIsOnlyMacOs() throws Exception {
+		if( !StandardMenus.isMac() ) {
+			assertFalse(fx(MacAppMenu::available), "not JavaFX's macOS application");
+			// so About, Settings and Exit are in the window's menus
+			List<String> file = fx(()->{
+				StandardMenus m = new StandardMenus("App").about(()->{}).settings(()->{}).quit(()->false);
+				m.build(new Stage());
+				List<String> ret = new ArrayList<>();
+				m.file.getItems().forEach(i->ret.add(i.getText()));
+				m.help.getItems().forEach(i->ret.add(i.getText()));
+				return ret;
+			});
+			assertTrue(file.contains("Settings...") && file.contains("Exit") && file.contains("About App"), file.toString());
+		}
+	}
 }

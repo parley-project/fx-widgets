@@ -39,8 +39,9 @@ import javafx.stage.Window;
  * Edit, View, the application's own menus, Window and Help, in that order.
  * <p>
  * About, Settings... and Quit follow the platform: on macOS they are in the application menu at the
- * top of the screen (through java.awt.Desktop, when it offers them); elsewhere, or if it doesn't,
- * Settings... and Exit end the File menu and About is in Help. Shortcuts use "Shortcut", the
+ * top of the screen, under the application's name (JavaFX's own menu, given the items; see
+ * MacAppMenu); elsewhere, or if that can't be done, Settings... and Exit end the File menu and About
+ * is in Help. Shortcuts use "Shortcut", the
  * platform's shortcut key (⌘ on macOS, Ctrl elsewhere).
  */
 public class StandardMenus {
@@ -103,7 +104,21 @@ public class StandardMenus {
 	 * @param appMenus the application's own menus, between View and Window
 	 */
 	public MenuBar build(Stage stage, Menu... appMenus) {
-		return build(stage, isMac() && appMenuHandlers(), appMenus);
+		boolean inAppMenu = isMac() && MacAppMenu.available();
+		if( inAppMenu ) {
+			MacAppMenu.use(this, appName, stage);
+		}
+		return build(stage, inAppMenu, appMenus);
+	}
+
+	/** What About does, or null. */
+	Runnable aboutAction() {
+		return about;
+	}
+
+	/** What Settings... does, or null. */
+	Runnable settingsAction() {
+		return settings;
 	}
 
 	/** As above, with About, Settings and Quit in the application menu (inAppMenu) or not: for tests. */
@@ -181,43 +196,6 @@ public class StandardMenus {
 		if( quit == null || quit.getAsBoolean() ) {
 			Platform.exit();
 			System.exit(0);
-		}
-	}
-
-	/**
-	 * On macOS, About, Settings and Quit in the application menu, through java.awt.Desktop (once for
-	 * the application).
-	 *
-	 * @return true if Desktop took them, false to put them in File and Help instead
-	 */
-	private boolean appMenuHandlers() {
-		try {
-			if( !java.awt.Desktop.isDesktopSupported() ) {
-				return false;
-			}
-			java.awt.Desktop d = java.awt.Desktop.getDesktop();
-			if( !d.isSupported(java.awt.Desktop.Action.APP_ABOUT) ) {
-				return false;
-			}
-			if( about != null ) {
-				d.setAboutHandler(e->Platform.runLater(about));
-			}
-			if( settings != null && d.isSupported(java.awt.Desktop.Action.APP_PREFERENCES) ) {
-				d.setPreferencesHandler(e->Platform.runLater(settings));
-			}
-			if( quit != null && d.isSupported(java.awt.Desktop.Action.APP_QUIT_HANDLER) ) {
-				d.setQuitHandler((e, response)->Platform.runLater(()->{
-					if( quit.getAsBoolean() ) {
-						response.performQuit();
-					} else {
-						response.cancelQuit();
-					}
-				}));
-			}
-			return true;
-		} catch (RuntimeException | Error e) {
-			// no AWT desktop here: the items go in File and Help
-			return false;
 		}
 	}
 }
