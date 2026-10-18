@@ -169,6 +169,10 @@ public class SettingsDialog {
 		accepted = true;
 		stage.close();
 		if( !chosen.equals(original) ) {
+			if( chosen.getTheme().isDark() != Theme.current().isDark() ) {
+				// macOS title bars dark or not, now rather than at the next start
+				us.bringardner.swing.gradient.MacAppearance.follow(chosen.getTheme());
+			}
 			Theme.setCurrent(chosen.getTheme());
 			GradientLook.setFont(chosen.getFont());
 			GradientLook.refresh();

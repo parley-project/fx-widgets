@@ -43,6 +43,8 @@ import us.bringardner.swing.gradient.Theme;
  */
 public final class GradientLook {
 
+	private static boolean macAppearanceSet;
+
 	/** The stylesheet's name, in this package. */
 	public static final String STYLESHEET = "gradient-look.css";
 
@@ -66,6 +68,11 @@ public final class GradientLook {
 	 * @return the scene
 	 */
 	public static Scene apply(Scene scene) {
+		if( !macAppearanceSet ) {
+			// the first window: macOS title bars dark for a dark theme (JavaFX has started by now)
+			macAppearanceSet = true;
+			us.bringardner.swing.gradient.MacAppearance.follow(Theme.current());
+		}
 		String css = stylesheet();
 		if( !scene.getStylesheets().contains(css) ) {
 			scene.getStylesheets().add(css);

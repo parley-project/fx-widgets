@@ -4,6 +4,9 @@
 
 ### Added
 
+- On macOS, title bars go dark or light with the theme: when the first window gets the gradient
+  look, and when Settings changes to or from a dark theme (swing-widgets' `MacAppearance`; the
+  application needs JNA on its class path).
 - `us.bringardner.fx.dialog`: the appearance settings for JavaFX applications, twins of
   swing-widgets' dialogs. `SettingsDialog` (theme and font, with a preview; shared with Swing
   applications), `ThemeDesigner` (new and edited themes, readability checks, applications' own
