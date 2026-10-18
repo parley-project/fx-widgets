@@ -70,7 +70,7 @@ final class MacAppMenu {
 			return false;
 		}
 		try {
-			app.getClass().getMethod("getAppleMenu");
+			method(app, "getAppleMenu");
 			Class.forName("com.sun.glass.ui.MenuItem$Callback");
 			return true;
 		} catch (Throwable e) {
@@ -111,6 +111,9 @@ final class MacAppMenu {
 				PauseTransition later = new PauseTransition(Duration.millis(100));
 				later.setOnFinished(e->customize(appName));
 				later.play();
+			} else {
+				customized = true;
+				failed("JavaFX made no application menu");
 			}
 			return;
 		}
@@ -124,7 +127,7 @@ final class MacAppMenu {
 			Class<?> callbackClass = Class.forName("com.sun.glass.ui.MenuItem$Callback");
 			Object separator = itemClass.getField("Separator").get(null);
 			Method insert = menuClass.getMethod("insert", itemClass, int.class);
-			Method create = app.getClass().getMethod("createMenuItem", String.class, callbackClass, int.class, int.class);
+			Method create = method(app, "createMenuItem", String.class, callbackClass, int.class, int.class);
 
 			// JavaFX's own: Hide <name>, ..., Quit <name>: the name, and Quit asks the application
 			@SuppressWarnings("unchecked")
@@ -162,9 +165,14 @@ final class MacAppMenu {
 			}), ',', 16), at++);
 			insert.invoke(menu, separator, at++);
 		} catch (Throwable e) {
-			// the menu stays as JavaFX made it; File and Help can't be given the items now, the bar is built
-			System.err.println("fx-widgets: can't add to the macOS application menu: " + e);
+			failed(e.toString());
 		}
+	}
+
+	/** The application menu can't have the items: the windows' File and Help menus get them instead. */
+	private static void failed(String why) {
+		System.err.println("fx-widgets: About, Settings and Quit are in File and Help: can't add them to the macOS application menu: " + why);
+		StandardMenus.inWindowMenus();
 	}
 
 	/** A glass menu item callback that runs an action on the JavaFX thread. */
@@ -197,9 +205,21 @@ final class MacAppMenu {
 			return null;
 		}
 		try {
-			return target.getClass().getMethod(method, types).invoke(target, args);
+			return method(target, method, types).invoke(target, args);
 		} catch (Throwable e) {
 			return null;
 		}
+	}
+
+	/**
+	 * A public method of an object, callable: JavaFX's macOS application class isn't public, so
+	 * its own methods (getAppleMenu) can only be called once made accessible.
+	 */
+	static Method method(Object target, String name, Class<?>... types) throws ReflectiveOperationException {
+		Method m = target.getClass().getMethod(name, types);
+		if( !java.lang.reflect.Modifier.isPublic(m.getDeclaringClass().getModifiers()) ) {
+			m.setAccessible(true);
+		}
+		return m;
 	}
 }

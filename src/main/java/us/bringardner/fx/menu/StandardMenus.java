@@ -53,6 +53,10 @@ public class StandardMenus {
 	public final Menu help = new Menu("Help");
 
 	private final String appName;
+	/** The menus built for the macOS application menu, in case it can't have the items after all. */
+	private static final java.util.List<StandardMenus> IN_APP_MENU = new java.util.ArrayList<>();
+	private static boolean inWindowMenus;
+	private MenuBar bar;
 	private Runnable about;
 	private Runnable settings;
 	private BooleanSupplier quit;
@@ -104,11 +108,33 @@ public class StandardMenus {
 	 * @param appMenus the application's own menus, between View and Window
 	 */
 	public MenuBar build(Stage stage, Menu... appMenus) {
-		boolean inAppMenu = isMac() && MacAppMenu.available();
+		boolean inAppMenu = isMac() && !inWindowMenus && MacAppMenu.available();
+		bar = build(stage, inAppMenu, appMenus);
 		if( inAppMenu ) {
+			IN_APP_MENU.add(this);
+			stage.addEventHandler(javafx.stage.WindowEvent.WINDOW_HIDDEN, e->IN_APP_MENU.remove(this));
 			MacAppMenu.use(this, appName, stage);
 		}
-		return build(stage, inAppMenu, appMenus);
+		return bar;
+	}
+
+	/**
+	 * The macOS application menu couldn't be given About, Settings and Quit: they go in File and Help
+	 * of every window built for it, and of those built from now on.
+	 */
+	static void inWindowMenus() {
+		inWindowMenus = true;
+		for(StandardMenus m : new java.util.ArrayList<>(IN_APP_MENU)) {
+			m.addToWindowMenus();
+			// a File or Help that was empty isn't in the bar yet
+			if( !m.file.getItems().isEmpty() && !m.bar.getMenus().contains(m.file) ) {
+				m.bar.getMenus().add(0, m.file);
+			}
+			if( !m.help.getItems().isEmpty() && !m.bar.getMenus().contains(m.help) ) {
+				m.bar.getMenus().add(m.help);
+			}
+		}
+		IN_APP_MENU.clear();
 	}
 
 	/** What About does, or null. */
@@ -124,18 +150,7 @@ public class StandardMenus {
 	/** As above, with About, Settings and Quit in the application menu (inAppMenu) or not: for tests. */
 	MenuBar build(Stage stage, boolean inAppMenu, Menu... appMenus) {
 		if( !inAppMenu ) {
-			if( settings != null ) {
-				separate(file);
-				file.getItems().add(item("Settings...", "Shortcut+COMMA", settings));
-			}
-			if( quit != null ) {
-				separate(file);
-				file.getItems().add(item(isMac() ? "Quit " + appName : "Exit", isMac() ? "Shortcut+Q" : null, this::quit));
-			}
-			if( about != null ) {
-				separate(help);
-				help.getItems().add(item("About " + appName, null, about));
-			}
+			addToWindowMenus();
 		}
 		windowMenu(stage);
 		MenuBar bar = new MenuBar();
@@ -151,6 +166,22 @@ public class StandardMenus {
 		}
 		bar.setUseSystemMenuBar(true);
 		return bar;
+	}
+
+	/** Settings... and Exit (Quit on macOS) at the end of File, About in Help. */
+	private void addToWindowMenus() {
+		if( settings != null ) {
+			separate(file);
+			file.getItems().add(item("Settings...", "Shortcut+COMMA", settings));
+		}
+		if( quit != null ) {
+			separate(file);
+			file.getItems().add(item(isMac() ? "Quit " + appName : "Exit", isMac() ? "Shortcut+Q" : null, this::quit));
+		}
+		if( about != null ) {
+			separate(help);
+			help.getItems().add(item("About " + appName, null, about));
+		}
 	}
 
 	private static void separate(Menu menu) {

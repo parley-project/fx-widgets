@@ -177,4 +177,40 @@ public class TestStandardMenus {
 			assertTrue(file.contains("Settings...") && file.contains("Exit") && file.contains("About App"), file.toString());
 		}
 	}
+
+	/** A class that isn't public, as JavaFX's macOS application isn't. */
+	static final class Hidden {
+		public String name() {
+			return "hidden";
+		}
+	}
+
+	@Test
+	public void callsTheMethodsOfAClassThatIsntPublic() throws Exception {
+		Object o = new Hidden();
+		assertEquals("hidden", MacAppMenu.method(o, "name").invoke(o));
+	}
+
+	@Test
+	public void theWindowMenusGetTheItemsWhenTheApplicationMenuCant() throws Exception {
+		List<String> items = fx(()->{
+			StandardMenus m = new StandardMenus("App").about(()->{}).settings(()->{}).quit(()->false);
+			MenuBar bar = m.build(new Stage(), true);
+			java.lang.reflect.Field f = StandardMenus.class.getDeclaredField("bar");
+			f.setAccessible(true);
+			f.set(m, bar);
+			java.lang.reflect.Field list = StandardMenus.class.getDeclaredField("IN_APP_MENU");
+			list.setAccessible(true);
+			@SuppressWarnings("unchecked")
+			List<StandardMenus> menus = (List<StandardMenus>) list.get(null);
+			menus.add(m);
+			assertFalse(bar.getMenus().contains(m.help), "nothing in Help yet");
+			StandardMenus.inWindowMenus();
+			List<String> ret = new ArrayList<>();
+			bar.getMenus().forEach(menu->menu.getItems().forEach(i->ret.add(menu.getText() + " > " + i.getText())));
+			return ret;
+		});
+		assertTrue(items.contains("Help > About App"), items.toString());
+		assertTrue(items.stream().anyMatch(i->i.equals("File > Settings...")), items.toString());
+	}
 }
