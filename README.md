@@ -45,6 +45,7 @@ anyway.
 | Package | Class | Purpose |
 |---|---|---|
 | `us.bringardner.fx.menu` | `RecentItemsMenu` | A "Recent ..." menu of any kind of item, saved with `java.util.prefs.Preferences`. |
+| | `StandardMenus` | The menu bar every Parley application uses: the twin of swing-widgets' `StandardMenus`. |
 | `us.bringardner.fx.gradient` | `GradientLook` | parley-files-viewer's gradient look as a stylesheet: the twin of swing-widgets' `GradientLook`, with the same colors. |
 
 ### RecentItemsMenu
@@ -68,6 +69,24 @@ Differences from the Swing menu:
 - The maximum is asked for by `askMaxItems`, and errors shown by `showError`; tests override them
   instead of showing dialogs.
 
+## Standard menus
+
+`StandardMenus` is the JavaFX twin of swing-widgets' `StandardMenus`: the same menu bar (File,
+Edit, View, the application's menus, Window and Help) for a JavaFX window.
+
+```java
+StandardMenus menus = new StandardMenus("My App")
+        .about(() -> showAbout())
+        .settings(() -> showSettings())
+        .quit(() -> okToQuit());
+menus.file.getItems().add(StandardMenus.item("Open...", "Shortcut+O", () -> open()));
+root.setTop(menus.build(stage, runMenu));
+```
+
+On macOS the bar uses the system menu bar, and About, Settings… and Quit go in the application
+menu when the platform lets JavaFX set them there; otherwise they stay in the window's menus, as on
+other platforms (Settings… and Exit at the end of File, About in Help).
+
 ## The gradient look
 
 The look of parley-files-viewer (a diagonal gradient from light to dark gold behind everything, trees
@@ -88,6 +107,7 @@ root has the `theme-dark` style class, for an application's own styles. Popups (
 | fx-widgets | In Swing |
 |---|---|
 | `RecentItemsMenu` | swing-widgets' `RecentItemsMenu`, which shares its list with this one |
+| `StandardMenus` | swing-widgets' `StandardMenus`: the same layout for a Swing `JMenuBar` |
 | `GradientLook` | swing-widgets' `GradientLook`; both take their colors from swing-widgets' `GradientColors` |
 
 swing-widgets has more, because Swing lacks more: date and time pickers, a thread-safe progress

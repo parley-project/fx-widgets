@@ -4,6 +4,8 @@
 
 ### Added
 
+- `us.bringardner.fx.menu.StandardMenus`: the JavaFX twin of swing-widgets' `StandardMenus`, the
+  same menu layout for JavaFX applications.
 - `us.bringardner.fx.gradient.GradientLook`: parley-files-viewer's gradient look for JavaFX, the
   twin of swing-widgets' `GradientLook`. `apply(scene)` and `apply(dialog)` add its stylesheet
   (`gradient-look.css`) and set its two colors from swing-widgets' `GradientColors`.
