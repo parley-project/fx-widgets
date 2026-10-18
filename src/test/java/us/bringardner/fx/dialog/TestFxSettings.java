@@ -434,6 +434,100 @@ public class TestFxSettings {
 		assertNull(FxThemePages.create(TestExtension.ID));
 	}
 
+	// ---------------------------------------------------------------- the applications' tabs
+
+	static class MinePage implements FxSettingsPage {
+		final Label node = new Label("mine");
+		String problem;
+		Exception failure;
+		int oks;
+		int cancels;
+
+		@Override
+		public String getTitle() {
+			return "Mine";
+		}
+
+		@Override
+		public Node getNode() {
+			return node;
+		}
+
+		@Override
+		public String problem() {
+			return problem;
+		}
+
+		@Override
+		public void ok() throws Exception {
+			if( failure != null ) {
+				throw failure;
+			}
+			oks++;
+		}
+
+		@Override
+		public void cancel() {
+			cancels++;
+		}
+	}
+
+	/** The dialog, with what it would have told the user. */
+	static class TellingDialog extends SettingsDialog {
+		final java.util.List<String> told = new java.util.ArrayList<>();
+
+		TellingDialog() {
+			super(null, null);
+		}
+
+		@Override
+		protected void tell(javafx.scene.control.Alert.AlertType type, String title, String message) {
+			told.add(title + ": " + message);
+		}
+	}
+
+	@Test
+	public void anApplicationsSettingsPageIsATab() throws Exception {
+		try {
+			assertNull(fx(()->new SettingsDialog(null, null).getStage().getScene().getRoot().lookup(".tab-pane")),
+					"no pages: no tabs");
+			FxSettingsPages.register("test.mine", MinePage::new);
+			fx(()->{
+				TellingDialog d = new TellingDialog();
+				javafx.scene.control.TabPane tabs = (javafx.scene.control.TabPane) d.getStage().getScene().getRoot()
+						.lookup(".tab-pane");
+				assertNotNull(tabs);
+				assertEquals("Appearance", tabs.getTabs().get(0).getText());
+				assertEquals("Mine", tabs.getTabs().get(1).getText());
+				MinePage p = (MinePage) d.getPages().get(0);
+
+				p.problem = "not yet";
+				d.ok();
+				assertFalse(d.isAccepted());
+				assertEquals(1, tabs.getSelectionModel().getSelectedIndex(), "shown on the page");
+				assertEquals(List.of("Mine: not yet"), d.told);
+
+				p.problem = null;
+				p.failure = new java.io.IOException("disk full");
+				d.ok();
+				assertFalse(d.isAccepted());
+				assertTrue(d.told.get(1).contains("disk full"));
+
+				p.failure = null;
+				d.ok();
+				assertTrue(d.isAccepted());
+				assertEquals(1, p.oks);
+
+				TellingDialog c = new TellingDialog();
+				c.cancel();
+				assertEquals(1, ((MinePage) c.getPages().get(0)).cancels);
+				return null;
+			});
+		} finally {
+			FxSettingsPages.unregister("test.mine");
+		}
+	}
+
 	// ---------------------------------------------------------------- the font dialog
 
 	@Test

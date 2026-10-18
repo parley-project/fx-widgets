@@ -4,6 +4,10 @@
 
 ### Added
 
+- Applications' own tabs in Settings: register an `FxSettingsPage` with `FxSettingsPages.register(id,
+  factory)`, as in swing-widgets: Appearance is the first tab, OK checks and keeps every page,
+  Cancel tells them, and Reset to defaults shows with Appearance only. With none, the dialog is as
+  it was.
 - `FxThemePage.themeChanged(Theme)`: the theme designer tells an application's page of the theme
   as it changes, as swing-widgets' `ThemeExtension.Page` does. It does nothing by default.
 - Folders (parley-files-fx's file views) in the theme's colors, as swing-widgets' `FolderIcon`: the

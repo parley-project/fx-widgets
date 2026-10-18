@@ -33,6 +33,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -77,6 +79,9 @@ public class SettingsDialog {
 	private final Button editButton = new Button("Edit theme...");
 	private final Button deleteButton = new Button("Delete theme");
 	private final ThemePreview preview = new ThemePreview();
+	/** The applications' own tabs (none: no tabs). */
+	private final List<FxSettingsPage> pages = FxSettingsPages.create();
+	private TabPane tabs;
 
 	/**
 	 * @param owner the window it belongs to, or null
@@ -92,7 +97,8 @@ public class SettingsDialog {
 		if( owner != null ) {
 			stage.initOwner(owner);
 		}
-		stage.setResizable(false);
+		// the applications' tabs may want more room (a list, say)
+		stage.setResizable(!pages.isEmpty());
 		build();
 		show(chosen);
 	}
@@ -164,8 +170,29 @@ public class SettingsDialog {
 		show(chosen);
 	}
 
-	/** OK: puts the choice into effect, saves it if there is a preferences node, and closes. */
+	/**
+	 * OK: keeps the applications' tabs' changes, puts the appearance into effect, saves it if there
+	 * is a preferences node, and closes. A tab that can't keep its changes is shown, with why, and
+	 * the dialog stays open.
+	 */
 	public void ok() {
+		for(FxSettingsPage p : pages) {
+			String problem = p.problem();
+			if( problem != null ) {
+				showPage(p);
+				tell(Alert.AlertType.WARNING, p.getTitle(), problem);
+				return;
+			}
+		}
+		for(FxSettingsPage p : pages) {
+			try {
+				p.ok();
+			} catch (Exception e) {
+				showPage(p);
+				tell(Alert.AlertType.ERROR, p.getTitle(), "Can't keep the changes: " + e.getMessage());
+				return;
+			}
+		}
 		accepted = true;
 		stage.close();
 		if( !chosen.equals(original) ) {
@@ -184,6 +211,9 @@ public class SettingsDialog {
 
 	/** Cancel: closes without changing anything. */
 	public void cancel() {
+		for(FxSettingsPage p : pages) {
+			p.cancel();
+		}
 		accepted = false;
 		stage.close();
 	}
@@ -275,6 +305,28 @@ public class SettingsDialog {
 		return preview;
 	}
 
+	/** The applications' tabs in this dialog. */
+	public List<FxSettingsPage> getPages() {
+		return pages;
+	}
+
+	/** Shows a tab: one of {@link #getPages()}. */
+	public void showPage(FxSettingsPage p) {
+		int i = pages.indexOf(p);
+		if( tabs != null && i >= 0 ) {
+			tabs.getSelectionModel().select(i + 1);
+		}
+	}
+
+	/** Shows a message; tests replace it, as there's no one to close it. */
+	protected void tell(Alert.AlertType type, String title, String message) {
+		Alert a = new Alert(type, message, ButtonType.OK);
+		a.initOwner(stage);
+		a.setTitle(title);
+		a.setHeaderText(null);
+		a.showAndWait();
+	}
+
 	// ---------------------------------------------------------------- the window's parts
 
 	private void build() {
@@ -327,6 +379,19 @@ public class SettingsDialog {
 		buttons.setAlignment(Pos.CENTER_LEFT);
 
 		BorderPane content = new BorderPane(sections);
+		if( !pages.isEmpty() ) {
+			// Appearance, then the applications' tabs
+			tabs = new TabPane();
+			tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+			sections.setPadding(new Insets(10));
+			tabs.getTabs().add(new Tab("Appearance", sections));
+			for(FxSettingsPage p : pages) {
+				tabs.getTabs().add(new Tab(p.getTitle(), p.getNode()));
+			}
+			// the appearance's defaults: shown with the Appearance tab only
+			resetButton.visibleProperty().bind(tabs.getSelectionModel().selectedIndexProperty().isEqualTo(0));
+			content.setCenter(tabs);
+		}
 		content.setPadding(new Insets(16, 18, 12, 18));
 		content.setBottom(buttons);
 		BorderPane.setMargin(buttons, new Insets(12, 0, 0, 0));
