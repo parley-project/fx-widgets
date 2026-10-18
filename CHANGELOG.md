@@ -8,6 +8,10 @@
   twin of swing-widgets' `GradientLook`. `apply(scene)` and `apply(dialog)` add its stylesheet
   (`gradient-look.css`) and set its two colors from swing-widgets' `GradientColors`.
   `follow(dialog)` gives a library's dialog the look only if the window that owns it has it.
+- Themes: the stylesheet takes every color from swing-widgets' current `Theme` (Gold, Dark, Light,
+  the color themes or a custom one): text, fields, selections, table headers, outlines and button
+  text, not only the gradient. A dark theme also puts the `theme-dark` style class on the root
+  (`GradientLook.DARK_CLASS`) for an application's own styles.
 
 ## fx-widgets 1.0.0 (2026-10-16)
 

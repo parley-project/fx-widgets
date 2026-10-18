@@ -21,13 +21,13 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
 import us.bringardner.fx.gradient.GradientLook;
 import us.bringardner.swing.gradient.GradientColors;
+import us.bringardner.swing.gradient.Theme;
 
 public class TestGradientLook {
 
 	@AfterEach
 	public void restoreColors() {
-		GradientColors.setStart(GradientColors.DEFAULT_START);
-		GradientColors.setEnd(GradientColors.DEFAULT_END);
+		Theme.setCurrent(Theme.GOLD);
 	}
 
 	@Test
@@ -151,5 +151,46 @@ public class TestGradientLook {
 		assertTrue(r[2], "a dialog owned by a dialog with the look gets it");
 		assertTrue(!r[3], "no owner: left alone");
 		assertTrue(!r[4]);
+	}
+
+	@Test
+	public void aDarkThemeColorsTextAndMarksTheRoot() throws Exception {
+		Theme.setCurrent(Theme.DARK);
+		Object[] r = Fx.call(()->{
+			javafx.scene.control.Label label = new javafx.scene.control.Label("x");
+			javafx.scene.control.TextField field = new javafx.scene.control.TextField("y");
+			BorderPane root = new BorderPane(field);
+			root.setTop(label);
+			GradientLook.apply(new Scene(root, 200, 100));
+			root.applyCss();
+			label.applyCss();
+			field.applyCss();
+			boolean dark = root.getStyleClass().contains(GradientLook.DARK_CLASS);
+			Paint text = label.getTextFill();
+			// the field's layers: its border first, its inside last
+			Paint inside = field.getBackground().getFills().get(field.getBackground().getFills().size() - 1).getFill();
+			// Modena shades the inside slightly, ending in the field color
+			Paint fieldBg = inside instanceof LinearGradient
+					? ((LinearGradient) inside).getStops().get(((LinearGradient) inside).getStops().size() - 1).getColor()
+					: inside;
+			// back to gold: the class goes
+			Theme.setCurrent(Theme.GOLD);
+			GradientLook.apply(root.getScene());
+			return new Object[] {dark, text, fieldBg, root.getStyleClass().contains(GradientLook.DARK_CLASS)};
+		});
+		assertTrue((Boolean) r[0]);
+		assertEquals(color(Theme.DARK.getText()), r[1]);
+		assertEquals(color(Theme.DARK.getField()), r[2]);
+		assertTrue(!(Boolean) r[3]);
+	}
+
+	@Test
+	public void colorStyleHasEveryRole() {
+		String s = GradientLook.colorStyle();
+		for(String role : new String[] {"-gradient-start", "-gradient-end", "-theme-text", "-theme-field:",
+				"-theme-field-text", "-theme-selection:", "-theme-selection-text", "-theme-header:",
+				"-theme-header-text", "-theme-accent", "-theme-button-text"}) {
+			assertTrue(s.contains(role), role);
+		}
 	}
 }

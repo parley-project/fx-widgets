@@ -1,60 +1,114 @@
 /*
  * The gradient look for JavaFX: what swing-widgets' GradientLook gives a Swing application, and
- * what parley-files-viewer looks like. A diagonal gradient from the light color (top left) to the
- * dark color (bottom right) behind everything; trees, tables and lists you see it through; the
- * dark color for grid lines, table headers and selections; rounded gradient buttons.
+ * what parley-files-viewer looks like. A diagonal gradient from the theme's light color (top left)
+ * to its dark color (bottom right) behind everything; trees, tables and lists you see it through;
+ * the theme's colors for text, fields, selections, headers and outlines; rounded gradient buttons.
  *
- * The two colors are looked-up colors: GradientLook.apply sets them from swing-widgets'
- * GradientColors, so a change there reaches Swing and JavaFX alike. These are the defaults.
+ * The colors are looked-up colors, one per part of the theme: GradientLook.apply sets them from
+ * swing-widgets' current Theme, so Swing and JavaFX windows match. These are the gold theme's.
  */
 
 .root {
 	-gradient-start: #F2CE71;
 	-gradient-end: #967B28;
+	-theme-text: black;
+	-theme-field: white;
+	-theme-field-text: black;
+	-theme-selection: #967B28;
+	-theme-selection-text: white;
+	-theme-header: #967B28;
+	-theme-header-text: white;
+	-theme-accent: #967B28;
+	-theme-button-text: white;
 
 	-fx-background-color: linear-gradient(to bottom right, -gradient-start, -gradient-end);
 
-	/* Modena's colors, derived from the gradient's */
+	/* Modena's colors, from the theme's */
 	-fx-base: -gradient-start;
-	-fx-accent: -gradient-end;
-	-fx-focus-color: -gradient-end;
+	-fx-accent: -theme-selection;
+	-fx-focus-color: -theme-accent;
 	-fx-faint-focus-color: transparent;
-	-fx-selection-bar: -gradient-end;
-	-fx-selection-bar-non-focused: derive(-gradient-end, 25%);
-	-fx-selection-bar-text: -gradient-start;
-	-fx-box-border: -gradient-end;
-	-fx-outer-border: derive(-gradient-end, 20%);
-	-fx-default-button: -gradient-end;
-	/* text fields and other inputs stay white, as in Swing */
-	-fx-control-inner-background: white;
-	-fx-control-inner-background-alt: white;
+	-fx-selection-bar: -theme-selection;
+	-fx-selection-bar-non-focused: derive(-theme-selection, 25%);
+	-fx-selection-bar-text: -theme-selection-text;
+	-fx-box-border: -theme-accent;
+	-fx-outer-border: derive(-theme-accent, 20%);
+	-fx-default-button: -theme-accent;
+	-fx-control-inner-background: -theme-field;
+	-fx-control-inner-background-alt: -theme-field;
+	-fx-text-inner-color: -theme-field-text;
+	-fx-prompt-text-fill: derive(-theme-field-text, 45%);
+	-fx-highlight-fill: -theme-selection;
+	-fx-highlight-text-fill: -theme-selection-text;
 }
 
-/* ---- menus: the bar is see-through, the menus are the light color ---- */
+/* ---- text on the gradient ---- */
+.label, .check-box, .radio-button, .hyperlink {
+	-fx-text-fill: -theme-text;
+}
+.check-box > .box, .radio-button > .radio {
+	-fx-background-color: -theme-accent, -theme-field;
+}
+.check-box:selected > .box > .mark, .radio-button:selected > .radio > .dot {
+	-fx-background-color: -theme-field-text;
+}
+
+/* ---- menus: the bar is see-through, the menus are the field color ---- */
 .menu-bar {
 	-fx-background-color: transparent;
 }
+.menu-bar > .container > .menu-button > .label {
+	-fx-text-fill: -theme-text;
+}
 .menu-bar > .container > .menu-button:hover,
 .menu-bar > .container > .menu-button:showing {
-	-fx-background-color: derive(-gradient-end, 20%);
+	-fx-background-color: -theme-selection;
+}
+.menu-bar > .container > .menu-button:hover > .label,
+.menu-bar > .container > .menu-button:showing > .label {
+	-fx-text-fill: -theme-selection-text;
 }
 .context-menu {
-	-fx-background-color: -gradient-start;
-	-fx-border-color: -gradient-end;
+	-fx-background-color: -theme-field;
+	-fx-border-color: -theme-accent;
+}
+.menu-item > .label {
+	-fx-text-fill: -theme-field-text;
 }
 .menu-item:focused {
-	-fx-background-color: -gradient-end;
+	-fx-background-color: -theme-selection;
 }
 .menu-item:focused > .label {
-	-fx-text-fill: -gradient-start;
+	-fx-text-fill: -theme-selection-text;
 }
 
-/* ---- buttons: swing-widgets' GradientButton, rounded, white text, dark edge ---- */
+/* ---- combo boxes and choice boxes: like fields ---- */
+.combo-box-base, .choice-box {
+	-fx-background-color: -theme-accent, -theme-field;
+	-fx-background-insets: 0, 1;
+	-fx-background-radius: 3, 2;
+}
+.combo-box-base > .list-cell, .combo-box-base > .list-cell:filled:selected, .choice-box > .label {
+	-fx-background-color: transparent;
+	-fx-text-fill: -theme-field-text;
+}
+.combo-box-base > .arrow-button > .arrow, .choice-box > .open-button > .arrow {
+	-fx-background-color: -theme-field-text;
+}
+.combo-box-popup > .list-view {
+	-fx-background-color: -theme-field;
+}
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
+	-fx-background-color: -theme-field;
+	-fx-text-fill: -theme-field-text;
+}
+
+/* ---- buttons: swing-widgets' GradientButton, rounded, the theme's button text, dark edge ---- */
 .button, .toggle-button {
 	-fx-background-color: -gradient-end, linear-gradient(to right, derive(-gradient-end, 10%), derive(-gradient-start, -10%));
 	-fx-background-insets: 0, 1.5;
 	-fx-background-radius: 6, 5;
-	-fx-text-fill: white;
+	-fx-text-fill: -theme-button-text;
 	-fx-padding: 4 14 4 14;
 }
 .button:hover, .toggle-button:hover {
@@ -78,37 +132,37 @@
 	-fx-background-color: transparent;
 }
 .tree-view, .list-view, .table-view, .tree-table-view {
-	-fx-border-color: derive(-gradient-end, 20%);
+	-fx-border-color: derive(-theme-accent, 20%);
 }
 .tree-cell, .list-cell, .table-row-cell, .tree-table-row-cell {
 	-fx-background-color: transparent;
-	-fx-text-fill: black;
+	-fx-text-fill: -theme-text;
 }
 .tree-cell:filled:selected, .list-cell:filled:selected,
 .table-row-cell:filled:selected, .tree-table-row-cell:filled:selected {
-	-fx-background-color: -gradient-end;
-	-fx-text-fill: -gradient-start;
+	-fx-background-color: -theme-selection;
+	-fx-text-fill: -theme-selection-text;
 }
 .table-row-cell:filled:selected > .table-cell {
-	-fx-text-fill: -gradient-start;
+	-fx-text-fill: -theme-selection-text;
 }
 .tree-cell > .tree-disclosure-node > .arrow,
 .tree-table-row-cell > .tree-disclosure-node > .arrow {
-	-fx-background-color: -gradient-end;
+	-fx-background-color: -theme-accent;
 }
 .tree-cell:selected > .tree-disclosure-node > .arrow {
-	-fx-background-color: -gradient-start;
+	-fx-background-color: -theme-selection-text;
 }
 
-/* tables: grid lines and the header in the dark color */
+/* tables: grid lines in the accent, the header in the theme's header colors */
 .table-row-cell {
-	-fx-table-cell-border-color: -gradient-end;
-	-fx-border-color: transparent transparent -gradient-end transparent;
+	-fx-table-cell-border-color: -theme-accent;
+	-fx-border-color: transparent transparent -theme-accent transparent;
 	-fx-border-width: 0 0 1 0;
 }
 .table-cell {
-	-fx-text-fill: black;
-	-fx-border-color: transparent -gradient-end transparent transparent;
+	-fx-text-fill: -theme-text;
+	-fx-border-color: transparent -theme-accent transparent transparent;
 	-fx-border-width: 0 1 0 0;
 }
 .table-view .column-header-background,
@@ -117,24 +171,24 @@
 .tree-table-view .column-header-background,
 .tree-table-view .column-header,
 .tree-table-view .filler {
-	-fx-background-color: -gradient-end;
+	-fx-background-color: -theme-header;
 }
 .table-view .column-header .label,
 .tree-table-view .column-header .label {
-	-fx-text-fill: -gradient-start;
+	-fx-text-fill: -theme-header-text;
 	-fx-font-weight: bold;
 }
 .table-view .column-header .arrow,
 .tree-table-view .column-header .arrow {
-	-fx-background-color: -gradient-start;
+	-fx-background-color: -theme-header-text;
 }
 
-/* ---- scroll bars: the light color for the track, a gradient thumb ---- */
+/* ---- scroll bars: the light color for the track, a thumb in the accent ---- */
 .scroll-bar {
 	-fx-background-color: -gradient-start;
 }
 .scroll-bar > .thumb {
-	-fx-background-color: linear-gradient(to right, -gradient-end, derive(-gradient-end, 30%));
+	-fx-background-color: linear-gradient(to right, -theme-accent, derive(-theme-accent, 30%));
 	-fx-background-radius: 4;
 }
 .scroll-bar > .increment-button,
@@ -143,13 +197,13 @@
 }
 .scroll-bar > .increment-button > .increment-arrow,
 .scroll-bar > .decrement-button > .decrement-arrow {
-	-fx-background-color: -gradient-end;
+	-fx-background-color: -theme-accent;
 }
 .scroll-pane, .scroll-pane > .viewport, .split-pane {
 	-fx-background-color: transparent;
 }
 .split-pane > .split-pane-divider {
-	-fx-background-color: derive(-gradient-end, 20%);
+	-fx-background-color: derive(-theme-accent, 20%);
 	-fx-padding: 0 1 0 1;
 }
 
@@ -157,17 +211,20 @@
 .tab-pane > .tab-header-area > .tab-header-background {
 	-fx-background-color: transparent;
 }
+.tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
+	-fx-text-fill: -theme-text;
+}
 .tab-pane > .tab-header-area > .headers-region > .tab:selected {
-	-fx-background-color: -gradient-end;
+	-fx-background-color: -theme-selection;
 }
 .tab-pane > .tab-header-area > .headers-region > .tab:selected .tab-label {
-	-fx-text-fill: -gradient-start;
+	-fx-text-fill: -theme-selection-text;
 }
 .titled-pane > .title {
-	-fx-background-color: -gradient-end;
+	-fx-background-color: -theme-header;
 }
 .titled-pane > .title > .text {
-	-fx-fill: -gradient-start;
+	-fx-fill: -theme-header-text;
 }
 .titled-pane > .content {
 	-fx-background-color: transparent;
@@ -180,14 +237,17 @@
 .dialog-pane > .header-panel {
 	-fx-background-color: transparent;
 }
+.dialog-pane > .header-panel > .label, .dialog-pane > .content.label {
+	-fx-text-fill: -theme-text;
+}
 .dialog-pane > .button-bar > .container {
 	-fx-background-color: transparent;
 }
 
 .tooltip {
-	-fx-background-color: -gradient-start;
-	-fx-text-fill: black;
-	-fx-border-color: -gradient-end;
+	-fx-background-color: -theme-field;
+	-fx-text-fill: -theme-field-text;
+	-fx-border-color: -theme-accent;
 }
 
 .progress-bar > .bar {

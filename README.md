@@ -78,8 +78,9 @@ Scene scene = GradientLook.apply(new Scene(root, 900, 600));
 Alert alert = GradientLook.apply(new Alert(AlertType.CONFIRMATION, "Quit?"));  // dialogs are their own windows
 ```
 
-The colors are swing-widgets' `GradientColors`, so an application with both Swing and JavaFX windows
-changes them in one place. Popups (a `Popup`'s scene) take `GradientLook.apply(popup.getScene())`. A library's dialogs use
+The colors are swing-widgets' current `Theme` (Gold, Dark, Light, the color themes or a custom one),
+so an application with both Swing and JavaFX windows changes them in one place. With a dark theme the
+root has the `theme-dark` style class, for an application's own styles. Popups (a `Popup`'s scene) take `GradientLook.apply(popup.getScene())`. A library's dialogs use
 `GradientLook.follow(dialog)` after `initOwner`: the dialog gets the look only if its owner has it.
 
 ## Swing alternatives

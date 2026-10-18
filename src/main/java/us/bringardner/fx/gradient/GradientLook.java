@@ -28,7 +28,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Dialog;
 import javafx.stage.Window;
-import us.bringardner.swing.gradient.GradientColors;
+import us.bringardner.swing.gradient.Theme;
 
 /**
  * The gradient look for JavaFX: the twin of swing-widgets' GradientLook, and what
@@ -36,8 +36,9 @@ import us.bringardner.swing.gradient.GradientColors;
  * everything, see-through trees, tables and lists, the dark color for grid lines, headers and
  * selections, and rounded gradient buttons.
  * <p>
- * The colors are swing-widgets' {@link GradientColors}, so one change there reaches the Swing and
- * JavaFX parts of an application alike. Dialogs and popups are windows of their own, so apply the
+ * The colors are swing-widgets' current {@link Theme}'s, so one change there reaches the Swing and
+ * JavaFX parts of an application alike; a dark theme also puts the {@value #DARK_CLASS} style class
+ * on the root, for an application's own styles. Dialogs and popups are windows of their own, so apply the
  * look to each of them too.
  */
 public final class GradientLook {
@@ -59,7 +60,7 @@ public final class GradientLook {
 
 	/**
 	 * Gives a scene the gradient look: adds the stylesheet (once) and sets its colors from
-	 * {@link GradientColors}.
+	 * the current {@link Theme}.
 	 *
 	 * @param scene the scene
 	 * @return the scene
@@ -125,17 +126,29 @@ public final class GradientLook {
 		return isApplied(dialog.getOwner()) ? apply(dialog) : dialog;
 	}
 
-	/** The CSS that sets the two colors, for a node's style. */
+	/** The CSS that sets the current theme's colors, for a node's style. */
 	public static String colorStyle() {
-		return "-gradient-start: " + css(GradientColors.getStart()) + "; -gradient-end: "
-				+ css(GradientColors.getEnd()) + ";";
+		Theme t = Theme.current();
+		return "-gradient-start: " + css(t.getStart()) + "; -gradient-end: " + css(t.getEnd())
+				+ "; -theme-text: " + css(t.getText()) + "; -theme-field: " + css(t.getField())
+				+ "; -theme-field-text: " + css(t.getFieldText()) + "; -theme-selection: " + css(t.getSelection())
+				+ "; -theme-selection-text: " + css(t.getSelectionText()) + "; -theme-header: " + css(t.getHeader())
+				+ "; -theme-header-text: " + css(t.getHeaderText()) + "; -theme-accent: " + css(t.getAccent())
+				+ "; -theme-button-text: " + css(t.getButtonText()) + ";";
 	}
+
+	/** The style class on the root of a scene or dialog while a dark theme is in effect. */
+	public static final String DARK_CLASS = "theme-dark";
 
 	private static void colors(Parent root) {
 		String style = root.getStyle() == null ? "" : root.getStyle();
 		// replace what an earlier call set, keep the rest
-		style = style.replaceAll("-gradient-(start|end):\\s*#[0-9A-Fa-f]{6};\\s*", "").trim();
+		style = style.replaceAll("-(gradient|theme)-[a-z-]+:\\s*#[0-9A-Fa-f]{6};\\s*", "").trim();
 		root.setStyle((colorStyle() + " " + style).trim());
+		root.getStyleClass().remove(DARK_CLASS);
+		if( Theme.current().isDark() ) {
+			root.getStyleClass().add(DARK_CLASS);
+		}
 	}
 
 	static String css(java.awt.Color c) {
