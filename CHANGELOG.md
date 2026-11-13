@@ -1,6 +1,6 @@
 # Changelog
 
-## fx-widgets 1.1.0 (unreleased)
+## fx-widgets 2.0.0 (unreleased)
 
 ### Added
 
