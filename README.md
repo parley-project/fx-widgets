@@ -109,7 +109,7 @@ if( SettingsDialog.showDialog(stage, prefs) ) {
 }
 ```
 
-An application's own part of a theme (swing-widgets' `ThemeExtension`, such as fsh-ide's syntax
+An application's own part of a theme (swing-widgets' `ThemeExtension`, such as Fsh Studio's syntax
 colors) gets a tab in the JavaFX theme designer when it registers a page:
 `FxThemePages.register(extensionId, MyPage::new)`.
 

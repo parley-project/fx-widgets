@@ -33,7 +33,7 @@ public final class FxSettingsPages {
 	/**
 	 * Adds a tab; one with the same id is replaced.
 	 *
-	 * @param id names the page, such as "fsh-ide.templates"
+	 * @param id names the page, such as "fsh-studio.templates"
 	 * @param factory makes a new page for each dialog
 	 */
 	public static synchronized void register(String id, Supplier<? extends FxSettingsPage> factory) {
